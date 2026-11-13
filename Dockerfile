@@ -1,10 +1,16 @@
 FROM ghcr.io/astral-sh/uv:debian-slim
 
+# The slim base has no CA bundle; needed for HTTPS to providers and the self-ping.
+RUN apt-get update \
+    && apt-get install -y --no-install-recommends ca-certificates \
+    && rm -rf /var/lib/apt/lists/*
+
 ENV UV_LINK_MODE=copy \
     UV_COMPILE_BYTECODE=1 \
     UV_PYTHON_INSTALL_DIR=/opt/python \
     PYTHONUNBUFFERED=1 \
-    SETUPTOOLS_SCM_PRETEND_VERSION=0.0.0
+    SETUPTOOLS_SCM_PRETEND_VERSION=0.0.0 \
+    SSL_CERT_FILE=/etc/ssl/certs/ca-certificates.crt
 
 WORKDIR /app
 COPY . .
